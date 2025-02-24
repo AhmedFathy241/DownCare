@@ -14,7 +14,8 @@ namespace DownCare.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;  
+
         private readonly IAccountService _accountService;
         private readonly IConfiguration _config;
         public AccountController(UserManager<AppUser> userManager, IAccountService accountService, IConfiguration config)
