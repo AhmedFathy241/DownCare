@@ -1,0 +1,6 @@
+@DownCare.API_HostAddress = http://localhost:5001
+
+GET {{DownCare.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
