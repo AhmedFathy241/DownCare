@@ -13,6 +13,13 @@ namespace DownCare.Core.Entities
         public int Id { get; set; }
         public string? Content { get; set; }
         public DateTime DateTime { get; set; } = DateTime.Now;
+        public bool IsRead { get; set; }
+        public bool IsDelete { get; set; } = false;
+
+        // relation with User 1:m
+        [ForeignKey("AppUser")]
+        public string SenderId { get; set; }
+        public virtual AppUser? AppUser { get; set; }
 
         // relation with chatRoom 1:m
         [ForeignKey("ChatRoom")]

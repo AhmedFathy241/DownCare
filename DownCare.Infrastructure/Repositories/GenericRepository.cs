@@ -1,12 +1,7 @@
 ﻿using DownCare.Core.IRepositories;
 using DownCare.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DownCare.Infrastructure.Repositories
 {
@@ -34,9 +29,13 @@ namespace DownCare.Infrastructure.Repositories
             return (await _appDbContext.Set<T>().FindAsync(Id));
         }
 
+        public async Task<T?> GetByIdAsync(int Id)
+        {
+            return (await _appDbContext.Set<T>().FindAsync(Id));
+        }
         public async Task<T> FindAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _appDbContext.Set<T>().FirstOrDefaultAsync(predicate);
+            return await _appDbContext.Set<T>().FindAsync(predicate);
         }
     }
 }

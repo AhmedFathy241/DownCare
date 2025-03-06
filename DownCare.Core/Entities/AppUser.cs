@@ -16,6 +16,9 @@ namespace DownCare.Core.Entities
         public string Governate { get; set; }
         public string? PasswordResetCode { get; set; }
         public string? Bio { get; set; }
+        public string? ConnectionID { get; set; }
+        public DateTime? JoinedAt { get; set; }
+        public virtual ICollection<UserChatRoom> UserChatRooms { get; set; }
 
         //[NotMapped]
         //public IFormFile ImageFile { get; set; }

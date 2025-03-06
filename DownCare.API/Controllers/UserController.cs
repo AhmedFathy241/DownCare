@@ -1,10 +1,8 @@
-﻿using DownCare.Core.Entities;
-using DownCare.Services.DTOs;
+﻿using DownCare.Services.DTOs;
 using DownCare.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace DownCare.API.Controllers
 {
@@ -13,11 +11,9 @@ namespace DownCare.API.Controllers
     [Authorize]
     public class UserController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;
         private readonly IUserService _userService;
-        public UserController(UserManager<AppUser> userManager, IUserService userService)
+        public UserController(IUserService userService)
         {
-            _userManager = userManager;
             _userService = userService;
         }
         [HttpPost("ChangePassword")]
@@ -25,16 +21,22 @@ namespace DownCare.API.Controllers
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _userService.ChangePasswordAsync(changePassword);
-            if (response.IsSuccess == false)
-                return BadRequest(response.Message);
-            return Ok(response.Message);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var Res = await _userService.ChangePasswordAsync(userId, changePassword);
+            if (Res.IsSuccess == true)
+                return Ok(Res.Message);
+            return BadRequest(Res.Message);
         }
         [HttpGet("Search")]
-        public async Task<IActionResult> ReadDoctors([FromQuery]string? search)
+        public async Task<IActionResult> SearchOnDoctors([FromQuery]string? search)
         {
-            return Ok(await _userService.ReadDoctorsAsync(search));
+            return Ok(await _userService.SearchOnDoctorsAsync(search));
         }
+        //[HttpGet("GetAllDoctors")]
+        //public async Task<IActionResult> ReadDoctors()
+        //{
+        //    return Ok(await _userService.ReadDoctorsAsync());
+        //}
 
         //[HttpDelete]
         //public async Task<IActionResult> DeleteAccount(LoginDTO loginDTO)

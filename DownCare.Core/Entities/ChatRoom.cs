@@ -10,17 +10,15 @@ namespace DownCare.Core.Entities
     public class ChatRoom
     {
         public int Id { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string? Name { get; set; }
+        public bool IsGroup { get; set; } = false;
 
         // relation with message 1:m
         public virtual ICollection<Message>? Messages { get; set; }
 
-        // relation with doctor 1:m
-        [ForeignKey("Doctor")]
-        public string DocID { get; set; }
-        public virtual Doctor? Doctor { get; set; }
+        // relation with AppUser m:m
+        public virtual ICollection<UserChatRoom> UserChatRooms { get; set; }
 
-        // relation with mom m:m
-        public virtual ICollection<Mom>? Moms { get; set; }
-        
     }
 }

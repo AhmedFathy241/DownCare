@@ -1,15 +1,11 @@
-﻿using DownCare.Services.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DownCare.Core.Entities;
+using DownCare.Services.DTOs;
 
 namespace DownCare.Services.IServices
 {
     public interface IFeedbackService
     {
-        Task<int> CreateFeedbackAsync(string UserId, AddFeedbackOrArticleDTO feedback);
+        Task<APIResponse> CreateFeedbackAsync(string UserId, string content);
         Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync();
     }
 }

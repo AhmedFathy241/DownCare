@@ -2,6 +2,7 @@ using DownCare.Core.Entities;
 using DownCare.Core.IServices;
 using DownCare.Core.UnitOfWork;
 using DownCare.Infrastructure.Data;
+using DownCare.Infrastructure.Hubs;
 using DownCare.Services.IServices;
 using DownCare.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,6 +67,7 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddSignalR();
 #region Swagger Setting
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
@@ -110,9 +112,19 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
+app.Use(async (context, next) =>
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        dbContext.ChangeTracker.Clear();
+    }
+    await next();
+});
 app.UseHttpsRedirection();
 //app.UseStaticFiles();
 app.UseCors("MyPolicy");
 app.UseAuthorization();
+app.MapHub<ChatHub>("/ChatHub");
 app.MapControllers();
 app.Run();

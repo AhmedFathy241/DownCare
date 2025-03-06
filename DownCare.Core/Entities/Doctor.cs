@@ -16,8 +16,5 @@ namespace DownCare.Core.Entities
 
         // relation with article 1:m
         public virtual ICollection<Article>? Articles { get; set; }
-
-        // relation with chatRoom 1:m
-        public virtual ICollection<ChatRoom>? ChatRooms { get; set; }
     }
 }

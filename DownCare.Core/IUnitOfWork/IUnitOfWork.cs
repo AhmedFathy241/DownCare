@@ -10,10 +10,13 @@ namespace DownCare.Core.UnitOfWork
 {
     public interface IUnitOfWork : IDisposable
     {
+        public IGenricRepository<Doctor> Doctors { get; }
+        public IGenricRepository<Mom> Moms { get; }
         public IGenricRepository<Article> Articles { get; }
         public IGenricRepository<Feedback> Feedbacks { get; }
-        public IGenricRepository<Report> Reports { get; }
         public IGenricRepository<Child> Children { get; }
+        public IGenricRepository<ChatRoom> ChatRooms { get; }
+        public IGenricRepository<Message> Messages { get; }
         public Task<int> SaveAsync();
     }
 }

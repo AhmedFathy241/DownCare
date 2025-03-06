@@ -11,6 +11,7 @@ namespace DownCare.Core.IRepositories
     {
         Task<T> CreateAsync(T model);
         Task<T> GetByIdAsync(string Id);
+        Task<T> GetByIdAsync(int Id);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> FindAsync(Expression<Func<T, bool>> predicate);
     }

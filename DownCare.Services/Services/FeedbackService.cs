@@ -15,16 +15,27 @@ namespace DownCare.Services.Services
             _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
-        public async Task<int> CreateFeedbackAsync(string UserId, AddFeedbackOrArticleDTO feedback)
+        public async Task<APIResponse> CreateFeedbackAsync(string UserId, string content)
         {
-            Feedback newFeedback = new Feedback();
-            newFeedback.Content = feedback.Content;
-            newFeedback.MomID = UserId;
-            Feedback Model = await _unitOfWork.Feedbacks.CreateAsync(newFeedback);
-            return await _unitOfWork.SaveAsync();
+            if (string.IsNullOrEmpty(UserId))
+                return new APIResponse { IsSuccess = false, Message = "You are Unauthorized, Login and try again" };
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user == null)
+                return new APIResponse { IsSuccess = false, Message = "User not found in database" };
+            if (string.IsNullOrWhiteSpace(content))
+                return new APIResponse { IsSuccess = false, Message = "Contribute your opinion! Don't leave it blank" };
+            Feedback newFeedback = new Feedback()
+            {
+                Content = content,
+                MomID = UserId
+            };
+            await _unitOfWork.Feedbacks.CreateAsync(newFeedback);
+            int res = await _unitOfWork.SaveAsync();
+            if (res > 0)
+                return new APIResponse { IsSuccess = true, Message = "Feedback Created Successfully" };
+            return new APIResponse { IsSuccess = false, Message = "Failed To Create Feedback" };
         }
-
-        public async  Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync()
+        public async Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync()
         {
             List<Feedback> feedbacks = (List<Feedback>) await _unitOfWork.Feedbacks.GetAllAsync();
             List<GetFeedbacksOrArticlesDTO> DisplayedFeedbacks = new List<GetFeedbacksOrArticlesDTO>();

@@ -5,8 +5,9 @@ namespace DownCare.Services.IServices
 {
     public interface IUserService
     {
-        Task<APIResponse> ChangePasswordAsync(ChangePasswordDTO changePassword);
-        public Task<List<DoctorsDTO>> ReadDoctorsAsync(string? search=null);
-        public Task DeleteUserAsync(string email, string passsword);
+        Task<APIResponse> ChangePasswordAsync(string userId, ChangePasswordDTO changePassword);
+        Task<List<DoctorsDTO>> SearchOnDoctorsAsync(string? search=null);
+        //Task<List<DoctorsDTO>> ReadDoctorsAsync();
+        //Task DeleteUserAsync(string email, string passsword);
     }
 }

@@ -24,6 +24,6 @@ namespace DownCare.Core.Entities
         public virtual Mom? Mom { get; set; }
 
         // relation with activity m:m
-        public virtual ICollection<Activity>? Activities { get; set; }
+        //public virtual ICollection<Activity>? Activities { get; set; }
     }
 }

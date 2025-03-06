@@ -1,15 +1,11 @@
-﻿using DownCare.Services.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DownCare.Core.Entities;
+using DownCare.Services.DTOs;
 
 namespace DownCare.Services.IServices
 {
     public interface IArticleService
     {
-        Task<int> CreateArticleAsync(string UserId, AddFeedbackOrArticleDTO article);
+        Task<APIResponse> CreateArticleAsync(string UserId, string content);
         Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllArticlesAsync();
     }
 }

@@ -24,12 +24,14 @@ namespace DownCare.Infrastructure.Data
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
             //builder.ApplyConfiguration(new RoleSeedConfigration());
         }
-        DbSet<Article> Articles { get; set; }
-        DbSet<Feedback> Feedbacks { get; set; }
-        DbSet<Report> Reports { get; set; }
-        DbSet<Child> Children { get; set; }
-        DbSet<Activity> Activitys { get; set; }
-        DbSet<ChatRoom> ChatRooms { get; set; }
-        DbSet<Message> Messages { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Mom> Moms { get; set; }
+        public DbSet<Article> Articles { get; set; }
+        public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Child> Children { get; set; }
+        public DbSet<ChatRoom> ChatRooms { get; set; }
+        public DbSet<Message> Messages { get; set; }
+        //public DbSet<Activity> Activitys { get; set; }
+
     }
 }

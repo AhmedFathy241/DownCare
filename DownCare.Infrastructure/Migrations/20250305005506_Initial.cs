@@ -8,27 +8,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DownCare.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Activitys",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DifficultLevel = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Activitys", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -50,9 +34,12 @@ namespace DownCare.Infrastructure.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Governate = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordResetCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConnectionID = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Discriminator = table.Column<string>(type: "nvarchar(8)", maxLength: 8, nullable: false),
-                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -74,6 +61,21 @@ namespace DownCare.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatRooms",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsGroup = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatRooms", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -91,7 +93,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -112,7 +114,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.DocID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -133,7 +135,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -153,7 +155,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,13 +173,13 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -197,26 +199,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ChatRooms",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DocID = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChatRooms", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChatRooms_AspNetUsers_DocID",
-                        column: x => x.DocID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -241,7 +224,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.MomID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -264,7 +247,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.MomsId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -285,52 +268,7 @@ namespace DownCare.Infrastructure.Migrations
                         column: x => x.MomID,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Reports",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MomID = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Reports", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Reports_AspNetUsers_MomID",
-                        column: x => x.MomID,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ChatRoomMom",
-                columns: table => new
-                {
-                    ChatRoomsId = table.Column<int>(type: "int", nullable: false),
-                    MomsId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChatRoomMom", x => new { x.ChatRoomsId, x.MomsId });
-                    table.ForeignKey(
-                        name: "FK_ChatRoomMom_AspNetUsers_MomsId",
-                        column: x => x.MomsId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
-                    table.ForeignKey(
-                        name: "FK_ChatRoomMom_ChatRooms_ChatRoomsId",
-                        column: x => x.ChatRoomsId,
-                        principalTable: "ChatRooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -341,41 +279,50 @@ namespace DownCare.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false),
+                    SenderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ChatRoomID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Messages", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Messages_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Messages_ChatRooms_ChatRoomID",
                         column: x => x.ChatRoomID,
                         principalTable: "ChatRooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActivityChild",
+                name: "UserChatRoom",
                 columns: table => new
                 {
-                    ActivitiesId = table.Column<int>(type: "int", nullable: false),
-                    ChildrenId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ChatRoomId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ActivityChild", x => new { x.ActivitiesId, x.ChildrenId });
+                    table.PrimaryKey("PK_UserChatRoom", x => new { x.UserId, x.ChatRoomId });
                     table.ForeignKey(
-                        name: "FK_ActivityChild_Activitys_ActivitiesId",
-                        column: x => x.ActivitiesId,
-                        principalTable: "Activitys",
+                        name: "FK_UserChatRoom_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ActivityChild_Children_ChildrenId",
-                        column: x => x.ChildrenId,
-                        principalTable: "Children",
+                        name: "FK_UserChatRoom_ChatRooms_ChatRoomId",
+                        column: x => x.ChatRoomId,
+                        principalTable: "ChatRooms",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -386,11 +333,6 @@ namespace DownCare.Infrastructure.Migrations
                     { "540fa4db-060f-4f1b-b60a-dd199bfe4111", null, "Mom", "MOM" },
                     { "540fa4db-060f-4f1b-b60a-dd199bfe4f0b", null, "Doctor", "DOCTOR" }
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ActivityChild_ChildrenId",
-                table: "ActivityChild",
-                column: "ChildrenId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Articles_DocID",
@@ -437,16 +379,6 @@ namespace DownCare.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatRoomMom_MomsId",
-                table: "ChatRoomMom",
-                column: "MomsId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ChatRooms_DocID",
-                table: "ChatRooms",
-                column: "DocID");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Children_MomID",
                 table: "Children",
                 column: "MomID",
@@ -468,18 +400,19 @@ namespace DownCare.Infrastructure.Migrations
                 column: "ChatRoomID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reports_MomID",
-                table: "Reports",
-                column: "MomID",
-                unique: true);
+                name: "IX_Messages_SenderId",
+                table: "Messages",
+                column: "SenderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChatRoom_ChatRoomId",
+                table: "UserChatRoom",
+                column: "ChatRoomId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ActivityChild");
-
             migrationBuilder.DropTable(
                 name: "Articles");
 
@@ -499,7 +432,7 @@ namespace DownCare.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ChatRoomMom");
+                name: "Children");
 
             migrationBuilder.DropTable(
                 name: "DoctorMom");
@@ -511,22 +444,16 @@ namespace DownCare.Infrastructure.Migrations
                 name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Reports");
-
-            migrationBuilder.DropTable(
-                name: "Activitys");
-
-            migrationBuilder.DropTable(
-                name: "Children");
+                name: "UserChatRoom");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "ChatRooms");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "ChatRooms");
         }
     }
 }

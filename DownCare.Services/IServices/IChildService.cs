@@ -1,14 +1,11 @@
-﻿using DownCare.Services.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DownCare.Core.Entities;
+using DownCare.Services.DTOs;
 
 namespace DownCare.Services.IServices
 {
     public interface IChildService
     {
-        Task<bool> CreateChildAsync(string UserId, ChildDTO child);
+        Task<APIResponse> CreateChildAsync(string UserId, ChildDTO child);
+        //Task<ChildReportDTO> ReadChildReportAsync (string UserId);
     }
 }

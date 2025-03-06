@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DownCare.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250216174746_AddBio")]
-    partial class AddBio
+    [Migration("20250305005506_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,36 +24,6 @@ namespace DownCare.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ActivityChild", b =>
-                {
-                    b.Property<int>("ActivitiesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ChildrenId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ActivitiesId", "ChildrenId");
-
-                    b.HasIndex("ChildrenId");
-
-                    b.ToTable("ActivityChild");
-                });
-
-            modelBuilder.Entity("ChatRoomMom", b =>
-                {
-                    b.Property<int>("ChatRoomsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MomsId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ChatRoomsId", "MomsId");
-
-                    b.HasIndex("MomsId");
-
-                    b.ToTable("ChatRoomMom");
-                });
 
             modelBuilder.Entity("DoctorMom", b =>
                 {
@@ -70,34 +40,6 @@ namespace DownCare.Infrastructure.Migrations
                     b.ToTable("DoctorMom");
                 });
 
-            modelBuilder.Entity("DownCare.Core.Entities.Activity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("DifficultLevel")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Activitys");
-                });
-
             modelBuilder.Entity("DownCare.Core.Entities.AppUser", b =>
                 {
                     b.Property<string>("Id")
@@ -106,8 +48,14 @@ namespace DownCare.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Bio")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ConnectionID")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Discriminator")
@@ -128,6 +76,9 @@ namespace DownCare.Infrastructure.Migrations
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("JoinedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -219,13 +170,16 @@ namespace DownCare.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DocID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsGroup")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DocID");
 
                     b.ToTable("ChatRooms");
                 });
@@ -312,37 +266,38 @@ namespace DownCare.Infrastructure.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
 
-                    b.HasIndex("ChatRoomID");
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
 
-                    b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("DownCare.Core.Entities.Report", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DateTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MomID")
+                    b.Property<string>("SenderId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MomID")
-                        .IsUnique();
+                    b.HasIndex("ChatRoomID");
 
-                    b.ToTable("Reports");
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("DownCare.Core.Entities.UserChatRoom", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ChatRoomId");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.ToTable("UserChatRoom");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -496,9 +451,6 @@ namespace DownCare.Infrastructure.Migrations
                 {
                     b.HasBaseType("DownCare.Core.Entities.AppUser");
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasDiscriminator().HasValue("Doctor");
                 });
 
@@ -507,36 +459,6 @@ namespace DownCare.Infrastructure.Migrations
                     b.HasBaseType("DownCare.Core.Entities.AppUser");
 
                     b.HasDiscriminator().HasValue("Mom");
-                });
-
-            modelBuilder.Entity("ActivityChild", b =>
-                {
-                    b.HasOne("DownCare.Core.Entities.Activity", null)
-                        .WithMany()
-                        .HasForeignKey("ActivitiesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DownCare.Core.Entities.Child", null)
-                        .WithMany()
-                        .HasForeignKey("ChildrenId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ChatRoomMom", b =>
-                {
-                    b.HasOne("DownCare.Core.Entities.ChatRoom", null)
-                        .WithMany()
-                        .HasForeignKey("ChatRoomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DownCare.Core.Entities.Mom", null)
-                        .WithMany()
-                        .HasForeignKey("MomsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DoctorMom", b =>
@@ -558,17 +480,6 @@ namespace DownCare.Infrastructure.Migrations
                 {
                     b.HasOne("DownCare.Core.Entities.Doctor", "Doctor")
                         .WithMany("Articles")
-                        .HasForeignKey("DocID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
-                });
-
-            modelBuilder.Entity("DownCare.Core.Entities.ChatRoom", b =>
-                {
-                    b.HasOne("DownCare.Core.Entities.Doctor", "Doctor")
-                        .WithMany("ChatRooms")
                         .HasForeignKey("DocID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -606,18 +517,34 @@ namespace DownCare.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ChatRoom");
-                });
-
-            modelBuilder.Entity("DownCare.Core.Entities.Report", b =>
-                {
-                    b.HasOne("DownCare.Core.Entities.Mom", "Mom")
-                        .WithOne("Report")
-                        .HasForeignKey("DownCare.Core.Entities.Report", "MomID")
+                    b.HasOne("DownCare.Core.Entities.AppUser", "AppUser")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Mom");
+                    b.Navigation("AppUser");
+
+                    b.Navigation("ChatRoom");
+                });
+
+            modelBuilder.Entity("DownCare.Core.Entities.UserChatRoom", b =>
+                {
+                    b.HasOne("DownCare.Core.Entities.ChatRoom", "ChatRoom")
+                        .WithMany("UserChatRooms")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DownCare.Core.Entities.AppUser", "User")
+                        .WithMany("UserChatRooms")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -671,16 +598,21 @@ namespace DownCare.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DownCare.Core.Entities.AppUser", b =>
+                {
+                    b.Navigation("UserChatRooms");
+                });
+
             modelBuilder.Entity("DownCare.Core.Entities.ChatRoom", b =>
                 {
                     b.Navigation("Messages");
+
+                    b.Navigation("UserChatRooms");
                 });
 
             modelBuilder.Entity("DownCare.Core.Entities.Doctor", b =>
                 {
                     b.Navigation("Articles");
-
-                    b.Navigation("ChatRooms");
                 });
 
             modelBuilder.Entity("DownCare.Core.Entities.Mom", b =>
@@ -688,8 +620,6 @@ namespace DownCare.Infrastructure.Migrations
                     b.Navigation("Child");
 
                     b.Navigation("Feedbacks");
-
-                    b.Navigation("Report");
                 });
 #pragma warning restore 612, 618
         }

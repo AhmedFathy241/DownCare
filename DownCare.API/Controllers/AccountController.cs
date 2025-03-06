@@ -37,10 +37,14 @@ namespace DownCare.API.Controllers
                 foreach (var item in result.Errors)
                 {
                     ModelState.AddModelError("Error", item.Description);
-                    return BadRequest(ModelState);
                 }
             }
-            return BadRequest(ModelState);
+            var errorMessages = ModelState
+            .Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .ToList();
+            return BadRequest(new { Errors = errorMessages });
         }
         [HttpGet("ConfirmEmail")]
         public async Task<IActionResult> ConfirmEmail([FromQuery]string email, [FromQuery]string token)

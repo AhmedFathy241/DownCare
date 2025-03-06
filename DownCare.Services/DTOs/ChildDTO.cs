@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace DownCare.Services.DTOs
 {
@@ -17,7 +12,6 @@ namespace DownCare.Services.DTOs
         public int Age { get; set; }
 
         [Required]
-        
         public DateOnly DiagnosisDate { get; set; }
 
         [Required]

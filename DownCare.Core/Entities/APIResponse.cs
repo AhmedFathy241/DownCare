@@ -11,7 +11,6 @@ namespace DownCare.Core.Entities
     {
         public bool? IsSuccess { get; set; } = false;
         public string? Message { get; set; } = string.Empty;
-        public HttpStatusCode? StatusCode { get; set; } = HttpStatusCode.BadRequest;
         public List<string>? Errors { get; set; } = new List<string>();
         public object? Result { get; set; } = null;
     }
