@@ -8,15 +8,17 @@ namespace DownCare.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ArticleController : ControllerBase
     {
         private readonly IArticleService _articleService;
-        public ArticleController(IArticleService articleService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ArticleController(IArticleService articleService, IHttpContextAccessor httpContextAccessor)
         {
             _articleService = articleService;
+            _httpContextAccessor = httpContextAccessor;
         }
-        [HttpPost("AddArticle")]
+        [Authorize]
+        [HttpPost]
         public async Task<IActionResult> CreateArticle(AddFeedbackOrArticleDTO article)
         {
             if (!ModelState.IsValid)
@@ -27,10 +29,11 @@ namespace DownCare.API.Controllers
                 return Ok(Res.Message);
             return BadRequest(Res.Message);
         }
-        [HttpGet("GetAllArticles")]
+        [HttpGet]
         public async Task<IActionResult> ReadArticles()
         {
-            return Ok(await _articleService.ReadAllArticlesAsync());
+            var baseURL = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+            return Ok(await _articleService.ReadAllArticlesAsync(baseURL));
         }
     }
 }

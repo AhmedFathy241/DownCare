@@ -24,18 +24,19 @@ namespace DownCare.Infrastructure.Repositories
             return Data;
         }
 
-        public async Task<T?> GetByIdAsync(string Id)
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
         {
-            return (await _appDbContext.Set<T>().FindAsync(Id));
+            return await _appDbContext.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<T?> GetByIdAsync(int Id)
+        public async Task <bool> AnyAsync(Expression<Func<T, bool>> predicate)
         {
-            return (await _appDbContext.Set<T>().FindAsync(Id));
+            return await _appDbContext.Set<T>().AnyAsync(predicate);
         }
-        public async Task<T> FindAsync(Expression<Func<T, bool>> predicate)
+        public async Task DeleteAsync(T model)
         {
-            return await _appDbContext.Set<T>().FindAsync(predicate);
+            _appDbContext.Set<T>().Remove(model);
+            await _appDbContext.SaveChangesAsync();
         }
     }
 }

@@ -10,9 +10,9 @@ namespace DownCare.Core.IRepositories
     public interface IGenricRepository<T> where T : class
     {
         Task<T> CreateAsync(T model);
-        Task<T> GetByIdAsync(string Id);
-        Task<T> GetByIdAsync(int Id);
         Task<IEnumerable<T>> GetAllAsync();
-        Task<T> FindAsync(Expression<Func<T, bool>> predicate);
+        Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<T, bool>> predicate);
+        Task DeleteAsync(T model);
     }
 }

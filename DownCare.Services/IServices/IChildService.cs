@@ -5,7 +5,10 @@ namespace DownCare.Services.IServices
 {
     public interface IChildService
     {
-        Task<APIResponse> CreateChildAsync(string UserId, ChildDTO child);
-        //Task<ChildReportDTO> ReadChildReportAsync (string UserId);
+        Task<APIResponse> CreateChildAsync(string userId, ChildDTO child);
+        Task<APIResponse> CreateTestScoreAsync(string userId, TakeScoreDTO score);
+        Task<APIResponse> ReadChildReportAsync (string userId);
+        Task<APIResponse> ReadActivityDataAsync(string type, string baseUrl);
+        Task<APIResponse> ReadTestDataAsync(string type, string baseUrl);
     }
 }

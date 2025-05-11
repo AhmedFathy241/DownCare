@@ -15,7 +15,11 @@ namespace DownCare.Core.UnitOfWork
         public IGenricRepository<Article> Articles { get; }
         public IGenricRepository<Feedback> Feedbacks { get; }
         public IGenricRepository<Child> Children { get; }
+        public IGenricRepository<LinguisticsScore> LinguisticsScore { get; }
+        public IGenricRepository<CommunicationScore> CommunicationScore { get; }
+        public IGenricRepository<ActivityData> ActivityData { get; }
         public IGenricRepository<ChatRoom> ChatRooms { get; }
+        public IGenricRepository<UserChatRoom> UserChatRooms { get; }
         public IGenricRepository<Message> Messages { get; }
         public Task<int> SaveAsync();
     }

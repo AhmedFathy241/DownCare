@@ -35,7 +35,7 @@ namespace DownCare.Services.Services
                 return new APIResponse { IsSuccess = true, Message = "Feedback Created Successfully" };
             return new APIResponse { IsSuccess = false, Message = "Failed To Create Feedback" };
         }
-        public async Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync()
+        public async Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync(string baseURL)
         {
             List<Feedback> feedbacks = (List<Feedback>) await _unitOfWork.Feedbacks.GetAllAsync();
             List<GetFeedbacksOrArticlesDTO> DisplayedFeedbacks = new List<GetFeedbacksOrArticlesDTO>();
@@ -44,8 +44,10 @@ namespace DownCare.Services.Services
                 var user = await _userManager.FindByIdAsync(feedback.MomID);
                 DisplayedFeedbacks.Add(new GetFeedbacksOrArticlesDTO
                 {
-                    Email = user.Email,
+                    Id = feedback.Id,
+                    Name = user.UserName,
                     Content = feedback.Content,
+                    ImageUrl = string.IsNullOrEmpty(user.ImagePath) ? "" : baseURL + user.ImagePath,
                     DateTime = feedback.DateTime
                 });
             }

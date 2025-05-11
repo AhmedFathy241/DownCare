@@ -35,7 +35,7 @@ namespace DownCare.Services.Services
                 return new APIResponse { IsSuccess = true, Message = "Article Created Successfully" };
             return new APIResponse { IsSuccess = false, Message = "Failed To Create Article" };
         }
-        public async Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllArticlesAsync()
+        public async Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllArticlesAsync(string baseURL)
         {
             List<Article> articles = (List<Article>) await _unitOfWork.Articles.GetAllAsync();
             List<GetFeedbacksOrArticlesDTO> DisplayedArticles = new List<GetFeedbacksOrArticlesDTO>();
@@ -44,8 +44,10 @@ namespace DownCare.Services.Services
                 var user = await _userManager.FindByIdAsync(article.DocID);
                 DisplayedArticles.Add(new GetFeedbacksOrArticlesDTO
                 {
-                    Email = user.Email,  
+                    Id = article.Id,
+                    Name = user.UserName,  
                     Content = article.Content,
+                    ImageUrl = string.IsNullOrEmpty(user.ImagePath) ? "" : baseURL + user.ImagePath,
                     DateTime = article.DateTime
                 });
             }

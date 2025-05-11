@@ -8,15 +8,17 @@ namespace DownCare.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ChildController : ControllerBase
     {
         private readonly IChildService _childService;
-        public ChildController(IChildService childService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public ChildController(IChildService childService, IHttpContextAccessor httpContextAccessor)
         {
             _childService = childService;
+            _httpContextAccessor = httpContextAccessor;
         }
-        [HttpPost("AddChild")]
+        [Authorize]
+        [HttpPost]
         public async Task<IActionResult> CreateChild (ChildDTO child)
         {
             if (!ModelState.IsValid)
@@ -27,14 +29,45 @@ namespace DownCare.API.Controllers
                 return Ok(Res.Message);
             return BadRequest(Res.Message);
         }
-        //[HttpGet("GetChildReport")]
-        //public async Task<IActionResult> ReadChildReport()
-        //{
-        //    var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    if (string.IsNullOrEmpty(userId))
-        //        return Unauthorized("You are Unauthorized, Login and try again");
-        //    ChildReportDTO childReport = await _childService.ReadChildAsync(userId);
-        //    return Ok(childReport);
-        //}
+        [Authorize]
+        [HttpPost("Score")]
+        public async Task<IActionResult> CreateTestScoreAsync(TakeScoreDTO score)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var Res = await _childService.CreateTestScoreAsync(userId, score);
+            if (Res.IsSuccess == true)
+                return Ok(Res.Message);
+            return BadRequest(Res.Message);
+        }
+        [Authorize]
+        [HttpGet("Report")]
+        public async Task<IActionResult> ReadChildReport()
+        {
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var Res = await _childService.ReadChildReportAsync(userId);
+            if (Res.IsSuccess == true)
+                return Ok(Res.Model);
+            return BadRequest(Res.Message);
+        }
+        [HttpGet("ActivityData")]
+        public async Task<IActionResult> ReadActivityData([FromQuery] string level)
+        {
+            var baseUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+            var Res = await _childService.ReadActivityDataAsync(level, baseUrl);
+            if (Res.IsSuccess == true)
+                return Ok(Res.Model);
+            return BadRequest(Res.Message);
+        }
+        [HttpGet("TestData")]
+        public async Task<IActionResult> ReadTestData([FromQuery] string level)
+        {
+            var baseUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+            var Res = await _childService.ReadTestDataAsync(level, baseUrl);
+            if (Res.IsSuccess == true)
+                return Ok(Res.Model);
+            return BadRequest(Res.Message);
+        }
     }
 }

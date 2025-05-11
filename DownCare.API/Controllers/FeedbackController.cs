@@ -8,15 +8,17 @@ namespace DownCare.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class FeedbackController : ControllerBase
     {
         private readonly IFeedbackService _feedbackService;
-        public FeedbackController(IFeedbackService feedbackService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public FeedbackController(IFeedbackService feedbackService, IHttpContextAccessor httpContextAccessor)
         {
             _feedbackService = feedbackService;
+            _httpContextAccessor = httpContextAccessor;
         }
-        [HttpPost("AddFeedback")]
+        [Authorize]
+        [HttpPost]
         public async Task<IActionResult> CreateFeedback (AddFeedbackOrArticleDTO feedback)
         {
             if (!ModelState.IsValid)
@@ -27,10 +29,11 @@ namespace DownCare.API.Controllers
                 return Ok(Res.Message);
             return BadRequest(Res.Message);
         }
-        [HttpGet("GetAllFeedbacks")]
+        [HttpGet]
         public async Task<IActionResult> ReadAllFeedbacks()
         {
-            return Ok(await _feedbackService.ReadAllFeedbacksAsync());
+            var baseURL = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+            return Ok(await _feedbackService.ReadAllFeedbacksAsync(baseURL));
         }
     }
 }

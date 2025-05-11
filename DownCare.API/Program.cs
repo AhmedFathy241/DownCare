@@ -25,6 +25,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddIdentity<AppUser, IdentityRole>(option =>
 {
     option.Password.RequiredLength = 8;
+    option.Password.RequireNonAlphanumeric = false;
     option.User.RequireUniqueEmail = true;
     option.SignIn.RequireConfirmedEmail = true;
 }).AddEntityFrameworkStores<AppDbContext>()
@@ -55,6 +56,20 @@ builder.Services.AddAuthentication(options =>
         RequireExpirationTime = false,
         ValidateIssuerSigningKey = true
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["token"];
+            var path = context.HttpContext.Request.Path;
+            if (path.StartsWithSegments("/ChatHub") && !string.IsNullOrEmpty(accessToken))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddCors(options =>
@@ -68,6 +83,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSignalR();
+    
 #region Swagger Setting
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(swagger =>
@@ -99,12 +115,13 @@ builder.Services.AddSwaggerGen(swagger =>
 
 // Custom Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IChildService, ChildService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IChildService, ChildService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 
 var app = builder.Build();
 
@@ -112,18 +129,19 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.Use(async (context, next) =>
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        dbContext.ChangeTracker.Clear();
-    }
-    await next();
-});
+//app.Use(async (context, next) =>
+//{
+//    using (var scope = app.Services.CreateScope())
+//    {
+//        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//        dbContext.ChangeTracker.Clear();
+//    }
+//    await next();
+//});
 app.UseHttpsRedirection();
-//app.UseStaticFiles();
+app.UseStaticFiles();
 app.UseCors("MyPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/ChatHub");
 app.MapControllers();

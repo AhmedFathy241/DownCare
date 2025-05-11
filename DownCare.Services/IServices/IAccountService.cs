@@ -9,6 +9,6 @@ namespace DownCare.Core.IServices
         Task<IdentityResult> CreateUserAsync(RegisterDTO registerDTO);
         Task<bool> ResendConfirmEmail(string email);
         Task<bool> ForgetPasswordAsync(string email);
-        Task<APIResponse> ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO);
+        Task<APIResponse> ResetPasswordAsync(string userId, ResetPasswordDTO ResetPasswordDTO);
     }
 }

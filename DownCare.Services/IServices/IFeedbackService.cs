@@ -6,6 +6,6 @@ namespace DownCare.Services.IServices
     public interface IFeedbackService
     {
         Task<APIResponse> CreateFeedbackAsync(string UserId, string content);
-        Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync();
+        Task<IEnumerable<GetFeedbacksOrArticlesDTO>> ReadAllFeedbacksAsync(string baseURL);
     }
 }

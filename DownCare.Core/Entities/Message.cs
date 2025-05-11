@@ -12,7 +12,7 @@ namespace DownCare.Core.Entities
     {
         public int Id { get; set; }
         public string? Content { get; set; }
-        public DateTime DateTime { get; set; } = DateTime.Now;
+        public DateTime DateTime { get; set; } = DateTime.UtcNow;
         public bool IsRead { get; set; }
         public bool IsDelete { get; set; } = false;
 

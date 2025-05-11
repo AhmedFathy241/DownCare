@@ -39,19 +39,14 @@ namespace DownCare.API.Controllers
                     ModelState.AddModelError("Error", item.Description);
                 }
             }
-            var errorMessages = ModelState
-            .Values
-            .SelectMany(v => v.Errors)
-            .Select(e => e.ErrorMessage)
-            .ToList();
-            return BadRequest(new { Errors = errorMessages });
+            return BadRequest(ModelState);
         }
         [HttpGet("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery]string email, [FromQuery]string token)
+        public async Task<IActionResult> ConfirmEmail([FromQuery]string userId, [FromQuery]string token)
         {
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
                 return BadRequest("Invalid Email or Token");
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
                 return BadRequest("User Not Found");
             var result = await _userManager.ConfirmEmailAsync(user, token);
@@ -102,7 +97,7 @@ namespace DownCare.API.Controllers
                                 claims: UserClaims,
                                 signingCredentials: signingCred);
 
-                            return Ok(new{ token = new JwtSecurityTokenHandler().WriteToken(MyToken) });
+                            return Ok(new{ token = new JwtSecurityTokenHandler().WriteToken(MyToken), Role = userFromDb.Role });
                         }
                         ModelState.AddModelError("Error", "Email doesn't confirmed yet");
                         return BadRequest(ModelState);
@@ -116,7 +111,7 @@ namespace DownCare.API.Controllers
             return BadRequest(ModelState);
         }
         [HttpPost("ForgetPassword")]
-        public async Task<IActionResult> ForgetPassword(string email)
+        public async Task<IActionResult> ForgetPassword([FromQuery] string email)
         {
             bool IsDone = await _accountService.ForgetPasswordAsync(email);
             if (!IsDone)
@@ -126,7 +121,8 @@ namespace DownCare.API.Controllers
         [HttpPost("verify-reset-code")]
         public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeDTO model)
         {
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var UserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(UserId);
             if (user == null || user.PasswordResetCode != model.Code)
             {
                 return BadRequest("Invalid reset code.");
@@ -138,7 +134,8 @@ namespace DownCare.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var response = await _accountService.ResetPasswordAsync(resetPassword);
+            var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _accountService.ResetPasswordAsync(userId, resetPassword);
             if (response.IsSuccess == false)
             {
                 ModelState.AddModelError("Error", response.Message);

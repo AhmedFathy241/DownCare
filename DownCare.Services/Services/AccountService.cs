@@ -39,7 +39,7 @@ namespace DownCare.Core.IServices
                 var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext
                 (_httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
                 var ConfirmLink = urlHelper.Action("ConfirmEmail", "Account", new
-                { email = user.Email, token = EmailToken }, _httpContextAccessor.HttpContext.Request.Scheme);
+                { userId = user.Id, token = EmailToken }, _httpContextAccessor.HttpContext.Request.Scheme);
                 await _emailService.SendEmailVerificationAsync(user.Email, user.UserName, ConfirmLink);
             }
             return result;
@@ -53,7 +53,7 @@ namespace DownCare.Core.IServices
             var urlHelper = _urlHelperFactory.GetUrlHelper(new ActionContext
             (_httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
             var ConfirmLink = urlHelper.Action("ConfirmEmail", "Account", new
-            { email = user.Email, token = EmailToken }, _httpContextAccessor.HttpContext.Request.Scheme);
+            { userId = user.Id, token = EmailToken }, _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailService.SendEmailVerificationAsync(user.Email, user.UserName, ConfirmLink);
             return true;
         }
@@ -73,9 +73,9 @@ namespace DownCare.Core.IServices
             await _emailService.SendResetPasswordVerificationAsync(user.Email, user.UserName, resetCode);
             return true;
         }
-        public async Task<APIResponse> ResetPasswordAsync(ResetPasswordDTO ResetPasswordDTO)
+        public async Task<APIResponse> ResetPasswordAsync(string userId, ResetPasswordDTO ResetPasswordDTO)
         {
-            var user = await _userManager.FindByEmailAsync(ResetPasswordDTO.email);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null || user.PasswordResetCode != ResetPasswordDTO.code)
                 return new APIResponse { IsSuccess = false, Message = "User Not Found Or Invalid reset code." };
             //var result = await _userManager.VerifyUserTokenAsync(user,
