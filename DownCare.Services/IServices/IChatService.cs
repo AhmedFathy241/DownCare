@@ -9,6 +9,7 @@ namespace DownCare.Services.IServices
         Task<IEnumerable<MessagesDTO>> ReadMessagesAsync(int ChatRoomId, string baseURL);
         Task<APIResponse> DeleteMessageAsync(int messageId);
         Task<APIResponse> ReadGroupMembersAsync(string baseURL);
+        Task<APIResponse> ReadPrivateMessagesAsync(string recipientUserId, string SenderId, string baseURL);
 
         Task<ChatRoom> GerOrCreateChatRoomAsync(string SenderId, string recipientUserId);
         Task<APIResponse> JoinGroupAsync(string userId);

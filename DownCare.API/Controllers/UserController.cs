@@ -9,7 +9,6 @@ namespace DownCare.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -19,6 +18,7 @@ namespace DownCare.API.Controllers
             _userService = userService;
             _httpContextAccessor = httpContextAccessor;
         }
+        [Authorize]
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDTO changePassword)
         {
@@ -30,12 +30,7 @@ namespace DownCare.API.Controllers
                 return Ok(res.Message);
             return BadRequest(res.Message);
         }
-        [HttpGet("Search")]
-        public async Task<IActionResult> SearchOnDoctors([FromQuery]string? search)
-        {
-            var baseUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
-            return Ok(await _userService.SearchOnDoctorsAsync(baseUrl, search));
-        }
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> ReadUserInfo()
         {
@@ -46,6 +41,7 @@ namespace DownCare.API.Controllers
                 return Ok(res.Model);
             return BadRequest(res.Message);
         }
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> UpdateUserInfo([FromForm]UpdatedUserInfoDTO updatedInfo)
         {
@@ -69,6 +65,12 @@ namespace DownCare.API.Controllers
         {
             var baseUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
             return Ok(await _userService.ReadDoctorsAsync(baseUrl));
+        }
+        [HttpGet("Search")]
+        public async Task<IActionResult> SearchOnDoctors([FromQuery] string? search)
+        {
+            var baseUrl = $"{_httpContextAccessor.HttpContext.Request.Scheme}://{_httpContextAccessor.HttpContext.Request.Host}";
+            return Ok(await _userService.SearchOnDoctorsAsync(baseUrl, search));
         }
     }
 }

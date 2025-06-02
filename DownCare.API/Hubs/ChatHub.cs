@@ -20,49 +20,63 @@ namespace DownCare.Infrastructure.Hubs
             _chatService = chatService;
             _unitOfWork = unitOfWork;
         }
-        //public override async Task OnConnectedAsync()
-        //{
-        //    var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //}
-        public async Task SendMessage (string recipientUserId, string content)
+        public override async Task OnConnectedAsync()
+        {
+            var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
+            await base.OnConnectedAsync();
+        }
+        public async Task SendMessage (string recipientUserId, string messageContent)
         {
             var SenderId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (SenderId == null)
-            {
-                throw new UnauthorizedAccessException("Sender is not authenticated.");
-            }
+            var Sender = await _userManager.FindByIdAsync(SenderId);
             var chatRoom = await _chatService.GerOrCreateChatRoomAsync(SenderId, recipientUserId);
-            var message = new Message
+
+            var privateMessage = new Message
             {
                 SenderId = SenderId,
                 ChatRoomID = chatRoom.Id,
-                Content = content,
-                IsRead = false
+                Content = messageContent
             };
-            await _unitOfWork.Messages.CreateAsync(message);
+            await _unitOfWork.Messages.CreateAsync(privateMessage);
             await _unitOfWork.SaveAsync();
-            var recipient = await _userManager.FindByIdAsync(recipientUserId);
-            if (recipient != null && !string.IsNullOrEmpty(recipient.ConnectionID))
+
+            await Clients.Group($"user-{recipientUserId}").SendAsync("ReceiveMessage", new
             {
-                await Clients.Client(recipient.ConnectionID).SendAsync("ReceiveMessage", new
-                {
-                    SenderId = SenderId,
-                    Content = content,
-                    Timestamp = message.DateTime
-                });
-            }
-            await Clients.Caller.SendAsync("MessageSent", new
+                message = messageContent,
+                messageId = privateMessage.Id,
+                displayTime = DateTime.UtcNow.ToString("MMM dd, yyyy 'at' hh:mm tt"),
+                userName = Sender.UserName,
+                //userImage = string.IsNullOrEmpty(Sender.ImagePath) ? "" : Sender.ImagePath,
+            });  
+        }
+        public async Task SendGroupMessage(string messageContent)
+        {
+            var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
+            var groupMessage = new Message
             {
-                RecipientId = recipientUserId,
-                Content = content,
-                Timestamp = message.DateTime
+                SenderId = userId,
+                ChatRoomID = 1,
+                Content = messageContent
+            };
+            await _unitOfWork.Messages.CreateAsync(groupMessage);
+            await _unitOfWork.SaveAsync();
+
+            await Clients.Group("MomsGroupChat").SendAsync("ReceiveGroupMessage", new
+            {
+                message = messageContent,
+                messageId = groupMessage.Id,
+                displayTime = DateTime.UtcNow.ToString("MMM dd, yyyy 'at' hh:mm tt"),
+                userName = user.UserName,
+                //userImage = string.IsNullOrEmpty(user.ImagePath) ? "" : user.ImagePath,
             });
         }
         public async Task JoinGroup()
         {
             var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-                throw new HubException("You are Unauthorized, Send Authorization");
+            var user = await _userManager.FindByIdAsync(userId);
             bool alreadyExist = await _unitOfWork.UserChatRooms.AnyAsync(u => u.ChatRoomId == 1 && u.UserId == userId);
             if (!alreadyExist)
             {
@@ -72,50 +86,23 @@ namespace DownCare.Infrastructure.Hubs
                     UserId = userId
                 };
                 await _unitOfWork.UserChatRooms.CreateAsync(UserChatRoom);
-                if (await _unitOfWork.SaveAsync() <= 0)
-                {
-                    throw new HubException("Failed to join the group chat");
-                }
-                string message = $"{userId} joined the GroupChat";
+                await _unitOfWork.SaveAsync();
+                string message = $"{user.UserName} joined the GroupChat";
                 await Clients.Group("MomsGroupChat").SendAsync("UserJoined", message);
             }
             await Groups.AddToGroupAsync(Context.ConnectionId, "MomsGroupChat");
         }
-        public async Task SendGroupMessage(string message)
-        {
-            var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
-
-            await Clients.Group("MomsGroupChat").SendAsync("ReceiveGroupMessage", new
-            {
-                Message = message,
-                DisplayTime = DateTime.UtcNow.ToString("MMM dd, yyyy 'at' hh:mm tt"),
-                UserName = user.UserName,
-                UserImage = string.IsNullOrEmpty(user.ImagePath) ? "" : user.ImagePath, 
-            });
-
-            var groupMessage = new Message
-            {
-                SenderId = userId,
-                ChatRoomID = 1,
-                Content = message,
-                IsRead = false
-            };
-            await _unitOfWork.Messages.CreateAsync(groupMessage);
-            await _unitOfWork.SaveAsync();
-        }
         public async Task LeftGroup()
         {
             var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-                throw new HubException("You are Unauthorized, Send Authorization");
+            var user = await _userManager.FindByIdAsync(userId);
             bool alreadyExist = await _unitOfWork.UserChatRooms.AnyAsync(u => u.ChatRoomId == 1 && u.UserId == userId);
             if (alreadyExist)
             {
                 var userLeft = await _unitOfWork.UserChatRooms.FirstOrDefaultAsync(u => u.ChatRoomId == 1 && u.UserId == userId);
                 await _unitOfWork.UserChatRooms.DeleteAsync(userLeft);
                 await _unitOfWork.SaveAsync();
-                string message = $"{userId} Left the GroupChat";
+                string message = $"{user.UserName} Left the GroupChat";
                 await Clients.Group("MomsGroupChat").SendAsync("UserLeft", message);
             }
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, "MomsGroupChat");

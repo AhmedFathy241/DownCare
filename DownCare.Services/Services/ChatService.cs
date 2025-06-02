@@ -19,23 +19,26 @@ namespace DownCare.Services.Services
         public async Task<APIResponse> ReadAllChatRoomsAsync(string userId, string baseURL)
         {
             var chatRooms = await _dbcontext.ChatRooms
-                 .Where(cr => cr.UserChatRooms.Any(ucr => ucr.UserId == userId))
-                 .Select(cr => new ChatRoomDTO
-                 {
-                     Id = cr.Id,
-                     Name = cr.IsGroup ? cr.Name : cr.UserChatRooms
-                         .Where(ucr => ucr.UserId != userId)
-                         .Select(ucr => ucr.User.UserName)
-                         .FirstOrDefault() ?? "Unknown",
-                     ImageUrl = cr.IsGroup ? cr.UserChatRooms
-                         .Where(ucr => ucr.UserId != userId)
-                         .Select(ucr => ucr.User.ImagePath)
-                         .FirstOrDefault() : cr.UserChatRooms
-                         .Where(ucr => ucr.UserId != userId)
-                         .Select(ucr => ucr.User.ImagePath)
-                         .FirstOrDefault() ?? ""
-                 })
-                 .ToListAsync();
+                .Where(cr => !cr.IsGroup && cr.UserChatRooms.Any(ucr => ucr.UserId == userId))
+                .Select(cr => new ChatRoomDTO
+                {
+                    Id = cr.Id,
+                    Name = cr.UserChatRooms
+                    .Where(ucr => ucr.UserId != userId)
+                    .Select(ucr => ucr.User.UserName)
+                    .FirstOrDefault() ?? "Unknown",
+                    ImageUrl = cr.UserChatRooms
+                    .Where(ucr => ucr.UserId != userId)
+                    .Select(ucr => string.IsNullOrEmpty(ucr.User.ImagePath)
+                        ? ""
+                        : baseURL + ucr.User.ImagePath)
+                    .FirstOrDefault() ?? "",
+                    RecipientUserId = cr.UserChatRooms
+                    .Where(ucr => ucr.UserId != userId)
+                    .Select(ucr => ucr.UserId)
+                    .FirstOrDefault()
+                })
+                .ToListAsync();
             return new APIResponse { Model = chatRooms };
         }
         public async Task<IEnumerable<MessagesDTO>> ReadMessagesAsync(int ChatRoomId, string baseURL)
@@ -81,7 +84,28 @@ namespace DownCare.Services.Services
                 .ToListAsync();
             return new APIResponse { Model = groupMembers };
         }
-
+        public async Task<APIResponse> ReadPrivateMessagesAsync(string recipientUserId, string SenderId, string baseURL)
+        {
+            var chatRoom = await _dbcontext.ChatRooms
+                .Include(cr => cr.UserChatRooms)
+                .ThenInclude(ucr => ucr.User)
+                .FirstOrDefaultAsync(cr => cr.UserChatRooms.Any(ucr => ucr.UserId == SenderId) &&
+                                          cr.UserChatRooms.Any(ucr => ucr.UserId == recipientUserId));
+            var messages = await _dbcontext.Messages
+                .Where(m => m.ChatRoomID == chatRoom.Id && m.IsDelete == false)
+                .OrderBy(m => m.DateTime)
+                .Select(m => new MessagesDTO
+                {
+                    Id = m.Id,
+                    Message = m.Content,
+                    DateTime = m.DateTime,
+                    DisplayTime = m.DateTime.ToString("MMM dd, yyyy 'at' hh:mm tt"),
+                    UserName = m.AppUser.UserName,
+                    UserImageURL = string.IsNullOrEmpty(m.AppUser.ImagePath) ? "" : baseURL + m.AppUser.ImagePath
+                })
+                .ToListAsync();
+            return new APIResponse { Model = messages };
+        }
         public async Task<ChatRoom> GerOrCreateChatRoomAsync(string SenderId, string recipientUserId)
         {
             var chatRoom = await _dbcontext.ChatRooms

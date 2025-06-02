@@ -4,28 +4,28 @@
     "Type": "OneWord",
     "Label": "أرنب",
     "ImagePath": "/Images/OneWord/أرنب.jpg",
-    "SoundPath": "/Sound/OneWord/أرنب.mp3"
+    "SoundPath": "/Sound/OneWord/ارنب.mp3"
   },
   {
     "Id": 2,
     "Type": "OneWord",
     "Label": "استيكه",
     "ImagePath": "/Images/OneWord/استيكه.png",
-    "SoundPath": "/Sound/OneWord/استيكه.mp3"
+    "SoundPath": "/Sound/OneWord/استيكة.mp3"
   },
   {
     "Id": 3,
     "Type": "OneWord",
     "Label": "أسد",
     "ImagePath": "/Images/OneWord/أسد.jpg",
-    "SoundPath": "/Sound/OneWord/أسد.mp3"
+    "SoundPath": "/Sound/OneWord/اسد.mp3"
   },
   {
     "Id": 4,
     "Type": "OneWord",
     "Label": "أسنان",
     "ImagePath": "/Images/OneWord/أسنان.jpg",
-    "SoundPath": "/Sound/OneWord/أسنان.mp3"
+    "SoundPath": "/Sound/OneWord/اسنان.mp3"
   },
   {
     "Id": 5,
@@ -259,7 +259,7 @@
     "Type": "TwoWord",
     "Label": "استيقظ مبكرا",
     "ImagePath": "/Images/TwoWord/استيقظ مبكرا.jpg",
-    "SoundPath": "/Sound/TwoWord/استيقظ مبكرا.mp3"
+    "SoundPath": "/Sound/TwoWord/أستيقظ مبكرا.mp3"
   },
   {
     "Id": 38,
@@ -273,7 +273,7 @@
     "Type": "TwoWord",
     "Label": "أغسل اسنانى",
     "ImagePath": "/Images/TwoWord/أغسل اسنانى.jpg",
-    "SoundPath": "/Sound/TwoWord/أغسل اسنانى.mp3"
+    "SoundPath": "/Sound/TwoWord/أغسل أسنانى.mp3"
   },
   {
     "Id": 40,
@@ -549,7 +549,7 @@
     "Type": "ThreeWord",
     "Label": "الولد يذهب للمدرسه",
     "ImagePath": "/Images/ThreeWord/الولد يذهب للمدرسه.png",
-    "SoundPath": "/Sound/ThreeWord/الولد يذهب للمدرسه.mp3"
+    "SoundPath": "/Sound/ThreeWord/الولد يذهب للمدرسة.mp3"
   },
   {
     "Id": 79,
@@ -1050,9 +1050,9 @@
   {
     "Id": 149,
     "Type": "FiveWord",
-    "Label": "يعالج الطبيب الطفل المريض فى المستشفى",
+    "Label": "يعالج الدكتور الطفل المريض فى المستشفى",
     "ImagePath": "/Images/FiveWord/يعالج الطبيب الطفل المريض فى المستشفى.png",
-    "SoundPath": "/Sound/FiveWord/يعالج الطبيب الطفل المريض فى المستشفى.mp3"
+    "SoundPath": "/Sound/FiveWord/يعالج الدكتور الطفل المريض فى المستشفى.mp3"
   },
   {
     "Id": 150,

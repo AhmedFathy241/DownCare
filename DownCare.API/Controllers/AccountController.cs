@@ -14,8 +14,7 @@ namespace DownCare.API.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<AppUser> _userManager;  
-
+        private readonly UserManager<AppUser> _userManager;
         private readonly IAccountService _accountService;
         private readonly IConfiguration _config;
         public AccountController(UserManager<AppUser> userManager, IAccountService accountService, IConfiguration config)
@@ -25,7 +24,7 @@ namespace DownCare.API.Controllers
             _config = config;
         }
         [HttpPost("Register")]
-        public async Task<IActionResult> CreateUser ([FromBody]RegisterDTO registerDTO)
+        public async Task<IActionResult> CreateUser([FromBody] RegisterDTO registerDTO)
         {
             if (ModelState.IsValid)
             {
@@ -42,7 +41,7 @@ namespace DownCare.API.Controllers
             return BadRequest(ModelState);
         }
         [HttpGet("ConfirmEmail")]
-        public async Task<IActionResult> ConfirmEmail([FromQuery]string userId, [FromQuery]string token)
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string userId, [FromQuery] string token)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
                 return BadRequest("Invalid Email or Token");
@@ -71,7 +70,7 @@ namespace DownCare.API.Controllers
             return Ok("Please check your mail again to verify your account");
         }
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +96,7 @@ namespace DownCare.API.Controllers
                                 claims: UserClaims,
                                 signingCredentials: signingCred);
 
-                            return Ok(new{ token = new JwtSecurityTokenHandler().WriteToken(MyToken), Role = userFromDb.Role });
+                            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(MyToken), Role = userFromDb.Role });
                         }
                         ModelState.AddModelError("Error", "Email doesn't confirmed yet");
                         return BadRequest(ModelState);
